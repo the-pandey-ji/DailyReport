@@ -1,4 +1,4 @@
-<%@ page import="com.entity.User" %>
+<%-- <%@ page import="com.entity.User" %>
 
 <!-- TOP ACCENT BAR -->
 <div class="container-fluid p-0">
@@ -177,3 +177,4 @@
     </div>
   </div>
 </div>
+ --%>
