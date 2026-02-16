@@ -5,6 +5,7 @@
     // Auto values from servlet
     String reportDate = (String) request.getAttribute("reportdate");
 Double totalUrea = (Double) request.getAttribute("totalureaproduce");
+System.out.println("Total Urea Produce: " + totalUrea);
 Double ureaOpening = (Double) request.getAttribute("ureaopeningstock");
 Double bagOpening = (Double) request.getAttribute("bagopeningstock");
 Double neemBagOpening = (Double) request.getAttribute("neembagopeningstock");
@@ -60,33 +61,7 @@ button {
 var ureadaytarget = 1550;
 var ureayeartarget = 511500;
 
-/* ================= ON LOAD ================= */
-function setForm() {
-    disable("reportdate");
-    disable("ureaopeningstock");
-    disable("ureaclosingstock");
-    disable("bagopeningstock");
-    disable("bagclosingstock");
-    disable("neembagopeningstock");
-    disable("neembagclosingstock");
-    disable("neemoilopeningstock");
-    disable("neemoilclosingstock");
 
-    var err = document.getElementById("error").value;
-    if (err === "N") {
-        alert("You are not authorized");
-        disableAll(true);
-    }
-}
-
-function disable(id){
-    var e=document.getElementById(id);
-    if(e) e.disabled=true;
-}
-
-function disableAll(flag){
-    document.querySelectorAll("input").forEach(i=>i.disabled=flag);
-}
 
 /* ================= VALIDATION ================= */
 function num(id){
@@ -124,10 +99,15 @@ function calcNeemOilClose(){
         (num("neemoilopeningstock")+num("neemoilreceipt")
         -num("neemoilconsumption")).toFixed(5);
 }
+function calcNeemDespatch(){
+    document.getElementById("neemureadespatch").value =
+        (num("rail")+num("road")).toFixed(2);
+     
+}
 
 /* ================= SAVE ================= */
 function saveForm(){
-    document.getElementById("jmethod").value="saveRecords";
+    document.getElementById("saverecord").value="saveRecords";
     document.forms[0].submit();
 }
 </script>
@@ -150,36 +130,80 @@ function saveForm(){
 <td>Report Date</td>
 <td><input id="reportdate" name="reportdate" value="<%=reportDate%>"></td>
 <td>Total Urea Produce</td>
-<td><input value="<%=totalUrea%>" disabled></td>
+<td><input value="<%=totalUrea%>" readonly></td>
 </tr>
 
 <tr>
 <td>Urea Production</td>
-<td><input id="ureaproduction" name="ureaproduction" onblur="checkno(this)"></td>
+<td><input id="ureaproduction" name="ureaproduction" onblur="checkno(this); calcUreaClose()"></td>
 <td>Neem Urea Production</td>
-<td><input id="neemureaproduction" name="neemureaproduction"></td>
-<td>Plain → Gold</td>
-<td><input id="plainureatogoldurea" name="plainureatogoldurea"></td>
+<td><input id="neemureaproduction" name="neemureaproduction" onblur="checkno(this)"></td>
+<td>Plain Transfer to Gold</td>
+<td><input id="plainureatogoldurea" name="plainureatogoldurea" onblur="calcUreaClose()"></td>
+</tr>
+
+<tr>
+<td>CO2 Consumption</td>
+<td><input id="co2consumption" name="co2consumption" onblur="checkno(this)"></td>
+<td>Steam Consumption</td>
+<td><input id="steamconsumption" name="steamconsumption"></td>
+<td>Steam Hours</td>
+<td><input id="steamhours" name="steamhours" ></td>
 </tr>
 </table>
 
 <h3>Production Loss</h3>
 <table>
 <tr>
-<td>Raw Materials</td><td><input id="rawmaterials"></td>
-<td>Export Power</td><td><input id="exportpower"></td>
-<td>Mechanical</td><td><input id="mechanical"></td>
-<td>Electrical</td><td><input id="electrical"></td>
+<td>Raw Materials</td>
+<td><input id="rawmaterials" name="rawmaterials" onblur="checkno(this)"></td>
+
+<td>Export Power</td>
+<td><input id="exportpower" name="exportpower" onblur="checkno(this)"></td>
+
+<td>Mechanical</td>
+<td><input id="mechanical" name="mechanical" onblur="checkno(this)"></td>
+
+<td>Electrical</td>
+<td><input id="electrical" name="electrical" onblur="checkno(this)"></td>
+</tr>
+
+<tr>
+<td>Instrumentation</td>
+<td><input id="instrumentation" name="instrumentation" onblur="checkno(this)"></td>
+
+<td>Process</td>
+<td><input id="process1" name="process1" onblur="checkno(this)"></td>
+
+<td>Shutdown</td>
+<td><input id="shutdown" name="shutdown" onblur="checkno(this)"></td>
+
+
+<td>Others</td>
+<td><input id="others" name="others" onblur="checkno(this)"></td>
+
+</tr>
+
+<tr>
+<td>Annual Shutdown</td>
+<td><input id="annualshutdown" name="annualshutdown" onblur="checkno(this)"></td>
+<td colspan="6"></td>
 </tr>
 </table>
+
 
 <h3>Urea Despatch</h3>
 <table>
 <tr>
-<td>Rail</td><td><input id="rail"></td>
-<td>Road</td><td><input id="road" onblur="calcUreaClose()"></td>
+<td>Rail</td><td><input id="rail" onblur="calcUreaClose();calcNeemDespatch()"></td>
+<td>Road</td><td><input id="road" onblur="calcUreaClose();calcNeemDespatch()"></td>
 <td>Opening Stock</td><td><input id="ureaopeningstock" value="<%=ureaOpening%>"></td>
 <td>Closing Stock</td><td><input id="ureaclosingstock"></td>
+</tr>
+<tr>
+
+<td>Neem Urea Despatch</td><td><input id="neemureadespatch" onblur="calcNeemDespatch()"></td>
+
 </tr>
 </table>
 
@@ -213,7 +237,7 @@ function saveForm(){
 </tr>
 </table>
 
-<input type="hidden" id="jmethod" name="jmethod">
+<input type="hidden" id="saverecord" name="saverecord">
 <input type="hidden" id="error" value="<%=error%>">
 
 <div class="footer">

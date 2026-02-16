@@ -36,7 +36,7 @@ public class UreaServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        if ("saveRecords".equals(req.getParameter("jmethod"))) {
+        if ("saveRecords".equals(req.getParameter("saverecord"))) {
             saveRecords(req);
         }
 
@@ -81,22 +81,39 @@ public class UreaServlet extends HttpServlet {
                 ")"
             );
 
+            //System.out.println("---- OPENING STOCK DEBUG ----");
+
             if (rs.next()) {
-                req.setAttribute("ureaopeningstock", rs.getDouble(1));
-                req.setAttribute("bagopeningstock", rs.getDouble(2));
-                req.setAttribute("neemoilopeningstock", rs.getDouble(3));
-                req.setAttribute("neembagopeningstock", rs.getDouble(4));
+                double urea = rs.getDouble(1);
+                double bag = rs.getDouble(2);
+                double oil = rs.getDouble(3);
+                double neembag = rs.getDouble(4);
+
+              /*  System.out.println("UREA STOCK = " + urea);
+                System.out.println("BAG STOCK  = " + bag);
+                System.out.println("OIL STOCK  = " + oil);
+                System.out.println("NEEM BAG   = " + neembag);
+                */
+
+                req.setAttribute("ureaopeningstock", urea);
+                req.setAttribute("bagopeningstock", bag);
+                req.setAttribute("neemoilopeningstock", oil);
+                req.setAttribute("neembagopeningstock", neembag);
+            } else {
+                System.out.println("NO ROW RETURNED FOR OPENING STOCK");
             }
+
 
 
             // ===== Total Urea FY =====
             rs = con.createStatement().executeQuery(
                 "SELECT NVL(SUM(D_UREA_PROD),0) FROM D_PROD_PERF_PNP " +
                 "WHERE D_DATE >= " +
-                "(SELECT ADD_MONTHS(TRUNC(MAX(D_DATE),'YYYY'),3) " +
+                "(SELECT ADD_MONTHS(TRUNC(MAX(D_DATE),'YYYY'),-9) " +
                 " FROM D_PROD_PERF_PNP)");
 
             if (rs.next()) req.setAttribute("totalureaproduce", rs.getDouble(1));
+           // System.out.println("TOTAL UREA FY = " + req.getAttribute("totalureaproduce"));
 
         } catch (Exception e) {
             e.printStackTrace();
