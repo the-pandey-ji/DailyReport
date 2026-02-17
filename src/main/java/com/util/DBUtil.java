@@ -1,4 +1,4 @@
-package com.nfl.dailyreport.util;
+package com.util;
 
 import java.sql.Connection;
 

@@ -2,19 +2,17 @@
 <%@ page import="java.time.LocalDate" %>
 
 <%
-    // Auto values from servlet
     String reportDate = (String) request.getAttribute("reportdate");
-Double totalUrea = (Double) request.getAttribute("totalureaproduce");
-System.out.println("Total Urea Produce: " + totalUrea);
-Double ureaOpening = (Double) request.getAttribute("ureaopeningstock");
-Double bagOpening = (Double) request.getAttribute("bagopeningstock");
-Double neemBagOpening = (Double) request.getAttribute("neembagopeningstock");
-Double neemOilOpening = (Double) request.getAttribute("neemoilopeningstock");
-
+    Double totalUrea = (Double) request.getAttribute("totalureaproduce");
+    Double ureaOpening = (Double) request.getAttribute("ureaopeningstock");
+    Double bagOpening = (Double) request.getAttribute("bagopeningstock");
+    Double neemBagOpening = (Double) request.getAttribute("neembagopeningstock");
+    Double neemOilOpening = (Double) request.getAttribute("neemoilopeningstock");
     String error = (String) request.getAttribute("error");
 
     if (reportDate == null) {
-        reportDate = LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        reportDate = LocalDate.now()
+            .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 %>
 
@@ -24,91 +22,152 @@ Double neemOilOpening = (Double) request.getAttribute("neemoilopeningstock");
 <title>Urea Daily Report</title>
 
 <style>
-body {
-    font-family: Arial;
-    background:#eaeaea;
-}
-.header {
-    background:#b7d8ea;
-    padding:6px;
-    font-weight:bold;
-}
-h3 {
-    color:#800000;
-    text-align:center;
-}
-table {
-    width:70%;
-    margin:auto;
-}
-td {
-    padding:6px;
-}
-input[type=text] {
-    width:90px;
-}
-.footer {
-    text-align:center;
-    padding:15px;
-}
-button {
-    padding:4px 20px;
-}
+body { font-family: Arial; background:#eaeaea; }
+.header { background:#b7d8ea; padding:6px; font-weight:bold; }
+h3 { color:#800000; text-align:center; }
+table { width:70%; margin:auto; }
+td { padding:6px; }
+input { width:90px; }
+.footer { text-align:center; padding:15px; }
+button { padding:4px 20px; }
 </style>
 
 <script>
-/* ================= CONSTANTS ================= */
 var ureadaytarget = 1550;
 var ureayeartarget = 511500;
 
-
-
-/* ================= VALIDATION ================= */
+/* ========= COMMON ========= */
 function num(id){
-    var v=document.getElementById(id).value;
-    return v===""?0:parseFloat(v);
+    var v = document.getElementById(id).value;
+    return v === "" ? 0 : parseFloat(v);
 }
 
 function checkno(el){
-    if(el.value!=="" && isNaN(el.value)){
+    if(el.value !== "" && isNaN(el.value)){
         alert("Only numbers allowed");
-        el.value="";
+        el.value = "";
         el.focus();
     }
 }
 
-/* ================= CALCULATIONS ================= */
+/* ========= CALCULATIONS ========= */
 function calcUreaClose(){
     document.getElementById("ureaclosingstock").value =
-        (num("ureaproduction")+num("ureaopeningstock")
-        -num("rail")-num("road")-num("plainureatogoldurea")).toFixed(3);
+        (num("ureaproduction") + num("ureaopeningstock")
+        - num("rail") - num("road") - num("plainureatogoldurea")).toFixed(3);
 }
 
 function calcBagClose(){
     document.getElementById("bagclosingstock").value =
-        num("bagopeningstock")+num("receipt")-num("consumption");
+        num("bagopeningstock") + num("receipt") - num("consumption");
 }
 
 function calcNeemBagClose(){
     document.getElementById("neembagclosingstock").value =
-        num("neembagopeningstock")+num("neemreceipt")-num("neemconsumption");
+        num("neembagopeningstock") + num("neemreceipt") - num("neemconsumption");
 }
 
 function calcNeemOilClose(){
     document.getElementById("neemoilclosingstock").value =
-        (num("neemoilopeningstock")+num("neemoilreceipt")
-        -num("neemoilconsumption")).toFixed(5);
-}
-function calcNeemDespatch(){
-    document.getElementById("neemureadespatch").value =
-        (num("rail")+num("road")).toFixed(2);
-     
+        (num("neemoilopeningstock") + num("neemoilreceipt")
+        - num("neemoilconsumption")).toFixed(5);
 }
 
-/* ================= SAVE ================= */
+function calcNeemDespatch(){
+    document.getElementById("neemureadespatch").value =
+        (num("rail") + num("road")).toFixed(2);
+}
+
+/* ========= SAVE ========= */
 function saveForm(){
-    document.getElementById("saverecord").value="saveRecords";
+    document.getElementById("saverecord").value = "saveRecords";
     document.forms[0].submit();
+}
+
+/* ========= LOAD ========= */
+function setForm(){
+    calcUreaClose();
+    calcBagClose();
+    calcNeemBagClose();
+    calcNeemOilClose();
+}
+
+/* ========= DATE CHANGE (NEW) ========= */
+function loadDetails(){
+
+    var date = document.getElementById("reportdate").value;
+    var xhr = new XMLHttpRequest();
+
+    xhr.open("GET","urea?action=details&reportdate="+encodeURIComponent(date),true);
+
+    xhr.onreadystatechange = function(){
+        if(xhr.readyState === 4 && xhr.status === 200){
+
+            var res = xhr.responseText;
+
+            if(res.startsWith("N?#?")){
+                alert("No data for given date. You can enter new data.");
+                clearEntryFields();
+                setForm();
+                return;
+            }
+
+            fillData(res.split("?#?"));
+        }
+    };
+    xhr.send();
+}
+
+function clearEntryFields(){
+    var ids = [
+        "ureaproduction","neemureaproduction","co2consumption",
+        "steamconsumption","steamhours",
+        "rawmaterials","exportpower","mechanical","electrical",
+        "instrumentation","process1","shutdown","others",
+        "rail","road","receipt","consumption",
+        "neemreceipt","neemconsumption",
+        "neemoilreceipt","neemoilconsumption",
+        "annualshutdown","plainureatogoldurea"
+    ];
+    ids.forEach(function(id){
+        if(document.getElementById(id)) document.getElementById(id).value="";
+    });
+}
+
+function fillData(d){
+    var i=0;
+    document.getElementById("ureaproduction").value=d[i++];
+    document.getElementById("neemureaproduction").value=d[i++];
+    document.getElementById("co2consumption").value=d[i++];
+    document.getElementById("steamconsumption").value=d[i++];
+    document.getElementById("steamhours").value=d[i++];
+    document.getElementById("rawmaterials").value=d[i++];
+    document.getElementById("exportpower").value=d[i++];
+    document.getElementById("mechanical").value=d[i++];
+    document.getElementById("electrical").value=d[i++];
+    document.getElementById("instrumentation").value=d[i++];
+    document.getElementById("process1").value=d[i++];
+    document.getElementById("shutdown").value=d[i++];
+    document.getElementById("others").value=d[i++];
+    document.getElementById("rail").value=d[i++];
+    document.getElementById("road").value=d[i++];
+    document.getElementById("ureaopeningstock").value=d[i++];
+    document.getElementById("ureaclosingstock").value=d[i++];
+    document.getElementById("neemureadespatch").value=d[i++];
+    document.getElementById("bagopeningstock").value=d[i++];
+    document.getElementById("receipt").value=d[i++];
+    document.getElementById("consumption").value=d[i++];
+    document.getElementById("bagclosingstock").value=d[i++];
+    document.getElementById("neemoilopeningstock").value=d[i++];
+    document.getElementById("neemoilreceipt").value=d[i++];
+    document.getElementById("neemoilconsumption").value=d[i++];
+    document.getElementById("neemoilclosingstock").value=d[i++];
+    document.getElementById("neembagopeningstock").value=d[i++];
+    document.getElementById("neemreceipt").value=d[i++];
+    document.getElementById("neemconsumption").value=d[i++];
+    document.getElementById("neembagclosingstock").value=d[i++];
+    document.getElementById("annualshutdown").value=d[i++];
+    document.getElementById("plainureatogoldurea").value=d[i++];
 }
 </script>
 
@@ -117,8 +176,8 @@ function saveForm(){
 <body onload="setForm()">
 
 <div class="header">
-    Department : Information Technology
-    <span style="float:right">User : Admin &nbsp;&nbsp; <%=reportDate%></span>
+Department : Information Technology
+<span style="float:right">User : Admin &nbsp;&nbsp; <%=reportDate%></span>
 </div>
 
 <h3>Urea Daily Report Data Entry Form</h3>
@@ -128,14 +187,14 @@ function saveForm(){
 <table>
 <tr>
 <td>Report Date</td>
-<td><input id="reportdate" name="reportdate" value="<%=reportDate%>"></td>
+<td><input id="reportdate" name="reportdate" value="<%=reportDate%>" onchange="loadDetails()"></td>
 <td>Total Urea Produce</td>
 <td><input value="<%=totalUrea%>" readonly></td>
 </tr>
 
 <tr>
 <td>Urea Production</td>
-<td><input id="ureaproduction" name="ureaproduction" onblur="checkno(this); calcUreaClose()"></td>
+<td><input id="ureaproduction" name="ureaproduction" onblur="checkno(this);calcUreaClose()"></td>
 <td>Neem Urea Production</td>
 <td><input id="neemureaproduction" name="neemureaproduction" onblur="checkno(this)"></td>
 <td>Plain Transfer to Gold</td>
@@ -148,7 +207,7 @@ function saveForm(){
 <td>Steam Consumption</td>
 <td><input id="steamconsumption" name="steamconsumption"></td>
 <td>Steam Hours</td>
-<td><input id="steamhours" name="steamhours" ></td>
+<td><input id="steamhours" name="steamhours"></td>
 </tr>
 </table>
 
@@ -157,13 +216,10 @@ function saveForm(){
 <tr>
 <td>Raw Materials</td>
 <td><input id="rawmaterials" name="rawmaterials" onblur="checkno(this)"></td>
-
 <td>Export Power</td>
 <td><input id="exportpower" name="exportpower" onblur="checkno(this)"></td>
-
 <td>Mechanical</td>
 <td><input id="mechanical" name="mechanical" onblur="checkno(this)"></td>
-
 <td>Electrical</td>
 <td><input id="electrical" name="electrical" onblur="checkno(this)"></td>
 </tr>
@@ -171,17 +227,12 @@ function saveForm(){
 <tr>
 <td>Instrumentation</td>
 <td><input id="instrumentation" name="instrumentation" onblur="checkno(this)"></td>
-
 <td>Process</td>
 <td><input id="process1" name="process1" onblur="checkno(this)"></td>
-
 <td>Shutdown</td>
 <td><input id="shutdown" name="shutdown" onblur="checkno(this)"></td>
-
-
 <td>Others</td>
 <td><input id="others" name="others" onblur="checkno(this)"></td>
-
 </tr>
 
 <tr>
@@ -191,49 +242,47 @@ function saveForm(){
 </tr>
 </table>
 
-
 <h3>Urea Despatch</h3>
 <table>
 <tr>
-<td>Rail</td><td><input id="rail" onblur="calcUreaClose();calcNeemDespatch()"></td>
-<td>Road</td><td><input id="road" onblur="calcUreaClose();calcNeemDespatch()"></td>
-<td>Opening Stock</td><td><input id="ureaopeningstock" value="<%=ureaOpening%>"></td>
-<td>Closing Stock</td><td><input id="ureaclosingstock"></td>
+<td>Rail</td><td><input id="rail" name="rail" onblur="calcUreaClose();calcNeemDespatch()"></td>
+<td>Road</td><td><input id="road" name="road" onblur="calcUreaClose();calcNeemDespatch()"></td>
+<td>Opening Stock</td><td><input id="ureaopeningstock" name="ureaopeningstock" value="<%=ureaOpening%>" readonly></td>
+<td>Closing Stock</td><td><input id="ureaclosingstock" name="ureaclosingstock"></td>
 </tr>
 <tr>
-
-<td>Neem Urea Despatch</td><td><input id="neemureadespatch" onblur="calcNeemDespatch()"></td>
-
+<td>Neem Urea Despatch</td>
+<td><input id="neemureadespatch" name="neemureadespatch" onblur="calcNeemDespatch()"></td>
 </tr>
 </table>
 
 <h3>HDPE Bags</h3>
 <table>
 <tr>
-<td>Opening</td><td><input id="bagopeningstock" value="<%=bagOpening%>"></td>
-<td>Receipt</td><td><input id="receipt"></td>
-<td>Consumption</td><td><input id="consumption" onblur="calcBagClose()"></td>
-<td>Closing</td><td><input id="bagclosingstock"></td>
+<td>Opening</td><td><input id="bagopeningstock" name="bagopeningstock" value="<%=bagOpening%>" readonly></td>
+<td>Receipt</td><td><input id="receipt" name="receipt" onblur="calcBagClose()"></td>
+<td>Consumption</td><td><input id="consumption" name="consumption" onblur="calcBagClose()"></td>
+<td>Closing</td><td><input id="bagclosingstock" name="bagclosingstock"></td>
 </tr>
 </table>
 
 <h3>Neem Bags</h3>
 <table>
 <tr>
-<td>Opening</td><td><input id="neembagopeningstock" value="<%=neemBagOpening%>"></td>
-<td>Receipt</td><td><input id="neemreceipt"></td>
-<td>Consumption</td><td><input id="neemconsumption" onblur="calcNeemBagClose()"></td>
-<td>Closing</td><td><input id="neembagclosingstock"></td>
+<td>Opening</td><td><input id="neembagopeningstock" name="neembagopeningstock" value="<%=neemBagOpening%>" readonly></td>
+<td>Receipt</td><td><input id="neemreceipt" name="neemreceipt" onblur="calcNeemBagClose()"></td>
+<td>Consumption</td><td><input id="neemconsumption" name="neemconsumption" onblur="calcNeemBagClose()"></td>
+<td>Closing</td><td><input id="neembagclosingstock" name="neembagclosingstock"></td>
 </tr>
 </table>
 
 <h3>Neem Oil</h3>
 <table>
 <tr>
-<td>Opening</td><td><input id="neemoilopeningstock" value="<%=neemOilOpening%>"></td>
-<td>Receipt</td><td><input id="neemoilreceipt"></td>
-<td>Consumption</td><td><input id="neemoilconsumption" onblur="calcNeemOilClose()"></td>
-<td>Closing</td><td><input id="neemoilclosingstock"></td>
+<td>Opening</td><td><input id="neemoilopeningstock" name="neemoilopeningstock" value="<%=neemOilOpening%>" readonly></td>
+<td>Receipt</td><td><input id="neemoilreceipt" name="neemoilreceipt" onblur="calcNeemOilClose()"></td>
+<td>Consumption</td><td><input id="neemoilconsumption" name="neemoilconsumption" onblur="calcNeemOilClose()"></td>
+<td>Closing</td><td><input id="neemoilclosingstock" name="neemoilclosingstock"></td>
 </tr>
 </table>
 
