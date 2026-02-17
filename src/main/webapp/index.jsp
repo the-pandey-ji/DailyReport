@@ -1,369 +1,113 @@
-
-
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard</title>
 
-<title>GuestHouse Management System | Secure Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
 
-<%@ include file="all_component/allCss.jsp" %>
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-<style>
-/* ===== RESET ===== */
-* {
-    box-sizing: border-box;
-}
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
 
-/* ===== PAGE BASE ===== */
-body {
-    margin: 0;
-    font-family: "Segoe UI", Roboto, Arial, sans-serif;
-    background: linear-gradient(
-        rgba(0,0,0,0.55),
-        rgba(0,0,0,0.55)
-    ),
-    url('/Complaint-Management-System/download.jpeg') no-repeat center center fixed;
-    background-size: cover;
-    height: 100vh;
+        /* Anchor behaves like a block */
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+        .box {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
 
-/* ===== LOGIN CARD (WIDER & PREMIUM) ===== */
-.login-wrapper {
-    width: 570px;              /* ⬅ MADE WIDER */
-    background: rgba(255, 255, 255, 0.94);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+        .box:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
 
-    border-radius: 22px;
-    padding: 44px 42px;
-    text-align: center;
-
-    border: 1px solid rgba(255, 255, 255, 0.35);
-
-    box-shadow:
-        0 30px 70px rgba(0, 0, 0, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.6);
-
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.login-wrapper:hover {
-    transform: translateY(-3px);
-    box-shadow:
-        0 40px 90px rgba(0, 0, 0, 0.45),
-        inset 0 1px 0 rgba(255, 255, 255, 0.6);
-}
-
-/* ===== BRAND ===== */
-.brand-logo img {
-    height: 120px;
-    margin-bottom: 14px;
-    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.25));
-}
-
-/* COMPANY NAME (SECONDARY) */
-.brand-title {
-    font-size: 18px;           /* ⬅ SMALLER */
-    font-weight: 600;
-    color: #2f3640;
-    letter-spacing: 0.3px;
-}
-
-/* SYSTEM NAME (PRIMARY) */
-.brand-subtitle {
-    font-size: 25px;           /* ⬅ BIGGER */
-    font-weight: 700;
-    color: #1e272e;
-    margin-bottom: 26px;
-    line-height: 1.4;
-}
-
-/* ===== FORM ===== */
-.form-group {
-    text-align: left;
-    margin-bottom: 16px;
-}
-
-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: #2f3640;
-}
-
-.form-control {
-    height: 48px;
-    border-radius: 12px;
-    font-size: 14px;
-    padding-left: 14px;
-    border: 1px solid #dcdde1;
-    background-color: #fafafa;
-}
-
-.form-control:focus {
-    border-color: #0984e3;
-    background-color: #ffffff;
-    box-shadow: 0 0 0 2px rgba(9,132,227,0.15);
-}
-
-/* ===== BUTTONS ===== */
-.btn-login {
-    height: 50px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #0984e3, #0652dd);
-    color: white;
-    font-weight: 600;
-    font-size: 15px;
-    letter-spacing: 0.3px;
-    border: none;
-    box-shadow: 0 8px 20px rgba(9,132,227,0.45);
-}
-
-.btn-login:hover {
-    box-shadow: 0 12px 30px rgba(9,132,227,0.6);
-}
-
-/* ===== ALERTS ===== */
-.alert {
-    font-size: 13px;
-    padding: 10px;
-    border-radius: 8px;
-}
-
-/* ===== FOOTER ===== */
-.login-footer {
-    font-size: 11px;
-    color: #636e72;
-    margin-top: 18px;
-    line-height: 1.5;
-}
-
-/* ===== SECURITY BADGE ===== */
-.secure-badge {
-    margin-top: 14px;
-    font-size: 11px;
-    color: #27ae60;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-}
-
-/* ===============================
-   RESPONSIVE DESIGN
-   =============================== */
-
-/* Tablets & Small Laptops */
-@media (max-width: 992px) {
-    .login-wrapper {
-        width: 90%;
-        padding: 38px 34px;
-    }
-
-    .brand-logo img {
-        height: 105px;
-    }
-
-    .brand-subtitle {
-        font-size: 23px;
-    }
-}
-
-/* Large Mobiles & Small Tablets */
-@media (max-width: 768px) {
-    body {
-        padding: 20px;
-        height: auto;
-    }
-
-    .login-wrapper {
-        width: 100%;
-        padding: 34px 30px;
-        border-radius: 18px;
-    }
-
-    .brand-logo img {
-        height: 95px;
-    }
-
-    .brand-title {
-        font-size: 16px;
-    }
-
-    .brand-subtitle {
-        font-size: 22px;
-        margin-bottom: 22px;
-    }
-
-    .form-control {
-        height: 46px;
-        font-size: 14px;
-    }
-
-    .btn-login {
-        height: 48px;
-        font-size: 14px;
-    }
-}
-
-/* Mobile Phones */
-@media (max-width: 576px) {
-    body {
-        padding: 14px;
-    }
-
-    .login-wrapper {
-        padding: 28px 22px;
-        border-radius: 16px;
-    }
-
-    .brand-logo img {
-        height: 80px;
-        margin-bottom: 10px;
-    }
-
-    .brand-title {
-        font-size: 15px;
-    }
-
-    .brand-subtitle {
-        font-size: 20px;
-        margin-bottom: 20px;
-    }
-
-    label {
-        font-size: 12px;
-    }
-
-    .form-control {
-        height: 44px;
-        font-size: 13px;
-    }
-
-    .btn-login,
-    .btn-secondary,
-    .btn-outline-primary {
-        height: 46px;
-        font-size: 13px;
-    }
-
-    .login-footer {
-        font-size: 10px;
-    }
-
-    .secure-badge {
-        font-size: 10px;
-    }
-}
-
-/* Extra Small Devices (Very Small Phones) */
-@media (max-width: 400px) {
-    .brand-subtitle {
-        font-size: 18px;
-    }
-
-    .login-wrapper {
-        padding: 24px 18px;
-    }
-}
-
-</style>
+        .box h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="login-wrapper">
+<h2>Plant Modules</h2>
 
-    <!-- SUCCESS MESSAGE -->
-    <%
-        String succMsg = (String) session.getAttribute("succMsg");
-        if (succMsg != null) {
-    %>
-        <div class="alert alert-success text-center"><%= succMsg %></div>
-    <%
-        session.removeAttribute("succMsg");
-        }
-    %>
+<div class="container">
 
-    <!-- ERROR MESSAGE -->
-    <%
-        String errorMsg = (String) session.getAttribute("errorMsg");
-        if (errorMsg != null) {
-    %>
-        <div class="alert alert-danger text-center"><%= errorMsg %></div>
-    <%
-        session.removeAttribute("errorMsg");
-        }
-    %>
+    <a href="dashboard.jsp" class="card-link">
+        <div class="box">
+            <h3>MHP</h3>
+        </div>
+    </a>
 
-    <!-- BRAND -->
-    <div class="brand-logo">
-        <img src="<%=request.getContextPath()%>/images/nflimage.png" alt="NFL Logo">
+    <a href="ammonia.jsp" class="card-link">
+        <div class="box">
+            <h3>Ammonia</h3>
+        </div>
+    </a>
 
-    </div>
+    <a href="urea" class="card-link">
+        <div class="box">
+            <h3>Urea</h3>
+        </div>
+    </a>
 
-    <!-- COMPANY -->
-    <div class="brand-title">
-        National Fertilizers Limited<br>
-          Panipat Unit
-    </div>
+    <a href="steam.jsp" class="card-link">
+        <div class="box">
+            <h3>Steam</h3>
+        </div>
+    </a>
 
-    <!-- SYSTEM NAME (PRIMARY) -->
-    <div class="brand-subtitle">
-      
-       Guest House Management
-    </div>
+    <a href="gtg.jsp" class="card-link">
+        <div class="box">
+            <h3>GTG</h3>
+        </div>
+    </a>
 
-    <!-- LOGIN FORM -->
-    <form action="login" method="post">
+    <a href="captivePower.jsp" class="card-link">
+        <div class="box">
+            <h3>Captive Power</h3>
+        </div>
+    </a>
 
-    <div class="form-group">
-        <label>Employee ID / Mobile Number</label>
-        <input type="text"
-               class="form-control"
-               name="empn"
-               placeholder="Enter your Employee ID"
-               required>
-    </div>
+    <a href="powerReport.jsp" class="card-link">
+        <div class="box">
+            <h3>Power Report</h3>
+        </div>
+    </a>
 
-    <div class="form-group">
-        <label>Password</label>
-        <input type="password"
-               class="form-control"
-               name="password"
-               placeholder="Enter your password"
-               required>
-    </div>
-
-    <button type="submit" class="btn btn-login btn-block mt-3">
-        <i class="fas fa-lock"></i> Secure Login
-    </button>
-
-    <button type="reset" class="btn btn-secondary btn-block mt-2">
-        Cancel
-    </button>
-
-    <!-- REGISTER BUTTON -->
-    <!-- <button type="button"
-            class="btn btn-outline-primary btn-block mt-2"
-            onclick="location.href='register.jsp'">
-        <i class="fas fa-user-plus"></i> Register
-    </button> -->
-
-</form>
+    <a href="offsites" class="card-link">
+        <div class="box">
+            <h3>Offsites & Utilities</h3>
+        </div>
+    </a>
 
 
-    <div class="secure-badge">
-        <i class="fas fa-shield-alt"></i> Secure Government System
-    </div>
-
-    <div class="login-footer">
-        For optimal performance, use the latest version of
-        Ulaa Browser.
-    </div>
 
 </div>
 
