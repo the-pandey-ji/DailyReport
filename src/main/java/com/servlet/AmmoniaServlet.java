@@ -24,8 +24,13 @@ public class AmmoniaServlet extends HttpServlet {
     protected void doPost(HttpServletRequest r, HttpServletResponse p)
             throws ServletException, IOException {
 
-        if("saveRecords".equals(r.getParameter("saverecord")))
-            save(r);
+    	String saveFlag = r.getParameter("saverecord");
+
+    	if ("saveRecords".equals(saveFlag)
+    	        && "POST".equalsIgnoreCase(r.getMethod())) {
+    	    save(r);
+    	}
+
 
         loadPage(r);
         r.getRequestDispatcher("/ammonia.jsp").forward(r,p);
@@ -148,6 +153,11 @@ public class AmmoniaServlet extends HttpServlet {
 
 
     private void save(HttpServletRequest r) {
+    	
+    	  if (r.getParameter("reportdate") == null ||
+    		        r.getParameter("reportdate").trim().isEmpty()) {
+    		        return;
+    		    }
 
         try (Connection c = DBUtil.getConnection()) {
 

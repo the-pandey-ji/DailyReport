@@ -35,8 +35,11 @@ public class UreaServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        if ("saveRecords".equals(req.getParameter("saverecord"))) {
-            saveRecords(req);
+    	String saveFlag = req.getParameter("saverecord");
+
+        if ("saveRecords".equals(saveFlag)
+                && "POST".equalsIgnoreCase(req.getMethod())) {
+            saveRecords(req);   // ✅ only explicit save
         }
 
         loadPage(req);
@@ -162,6 +165,11 @@ public class UreaServlet extends HttpServlet {
 
     /* ===================== SAVE ===================== */
     private void saveRecords(HttpServletRequest req) {
+    	// 🔐 SAFETY CHECK
+        if (req.getParameter("reportdate") == null ||
+            req.getParameter("reportdate").trim().isEmpty()) {
+            return;
+        }
 
         try (Connection con = DBUtil.getConnection()) {
 

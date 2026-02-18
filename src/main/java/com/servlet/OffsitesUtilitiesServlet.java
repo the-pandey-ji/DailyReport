@@ -32,7 +32,13 @@ public class OffsitesUtilitiesServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        saveRecords(req);
+    	 String saveFlag = req.getParameter("saverecord");
+
+    	    if ("saveRecords".equals(saveFlag)
+    	            && "POST".equalsIgnoreCase(req.getMethod())) {
+    	        saveRecords(req);   // ✅ only explicit save
+    	    }
+    	    
         loadInitialData(req);
         req.getRequestDispatcher("/offsitesUtilities.jsp").forward(req, resp);
     }
@@ -161,6 +167,11 @@ public class OffsitesUtilitiesServlet extends HttpServlet {
 
     /* ================= SAVE ================= */
     private void saveRecords(HttpServletRequest r) {
+    	// 🔐 SAFETY CHECK – PREVENT RELOAD / INVALID SAVE
+        if (r.getParameter("reportdate") == null ||
+            r.getParameter("reportdate").trim().isEmpty()) {
+            return;
+        }
 
         try (Connection c = DBUtil.getConnection()) {
 
