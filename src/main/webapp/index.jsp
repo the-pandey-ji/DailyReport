@@ -59,7 +59,7 @@
 
 <div class="container">
 
-    <a href="dashboard.jsp" class="card-link">
+    <a href="materialHandling" class="card-link">
         <div class="box">
             <h3>MHP</h3>
         </div>
