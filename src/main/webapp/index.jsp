@@ -89,7 +89,7 @@
         </div>
     </a>
 
-    <a href="captivePower.jsp" class="card-link">
+    <a href="cpp" class="card-link">
         <div class="box">
             <h3>Captive Power</h3>
         </div>
