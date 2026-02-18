@@ -187,77 +187,113 @@ public class OffsitesUtilitiesServlet extends HttpServlet {
 
         PreparedStatement ps = c.prepareStatement(
             "INSERT INTO D_PROD_PERF_PNP(" +
-            "D_DATE,D_H2SO4_RECEIPT,D_H2SO4_CONS,D_H2SO4_CL_STK," +
+            "D_DATE," +
+
+            "D_H2SO4_RECEIPT,D_H2SO4_CONS,D_H2SO4_CL_STK," +
+            "D_AMDEA_RECEIPT,D_AMDEA_CONS,D_AMDEA_CL_STK," +
             "D_NAOH_RECEIPT,D_NAOH_CONS,D_NAOH_CL_STK," +
+
             "D_BS_PROD,D_BS_DESP,D_BS_CL_STK," +
             "D_MS_RECT,D_MS_CONS,D_MS_CL_STK," +
             "D_BC_RECT,D_BC_CONS,D_BC_CL_STK," +
-            "D_BS_BAG_RECT,D_BS_BAG_CONS,D_BS_BAG_CL_STK,D_BS_STEAM_CONS)" +
-            "VALUES(TO_DATE(?,'DD/MM/YYYY'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+            "D_BS_BAG_RECT,D_BS_BAG_CONS,D_BS_BAG_CL_STK," +
+            "D_BS_STEAM_CONS) " +
+
+            "VALUES (TO_DATE(?,'DD/MM/YYYY'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         );
 
         int i = 1;
         ps.setString(i++, r.getParameter("reportdate"));
+
         ps.setDouble(i++, num(r,"h2so4_rct"));
         ps.setDouble(i++, num(r,"h2so4_cons"));
         ps.setDouble(i++, num(r,"h2so4_cl"));
+
+        ps.setDouble(i++, num(r,"amdea_rct"));
+        ps.setDouble(i++, num(r,"amdea_cons"));
+        ps.setDouble(i++, num(r,"amdea_cl"));
+
         ps.setDouble(i++, num(r,"naoh_rct"));
         ps.setDouble(i++, num(r,"naoh_cons"));
         ps.setDouble(i++, num(r,"naoh_cl"));
+
         ps.setDouble(i++, num(r,"bs_rct"));
         ps.setDouble(i++, num(r,"bs_cons"));
         ps.setDouble(i++, num(r,"bs_cl"));
+
         ps.setDouble(i++, num(r,"ms_rct"));
         ps.setDouble(i++, num(r,"ms_cons"));
         ps.setDouble(i++, num(r,"ms_cl"));
+
         ps.setDouble(i++, num(r,"bc_rct"));
         ps.setDouble(i++, num(r,"bc_cons"));
         ps.setDouble(i++, num(r,"bc_cl"));
+
         ps.setDouble(i++, num(r,"bs_bag_rct"));
         ps.setDouble(i++, num(r,"bs_bag_cons"));
         ps.setDouble(i++, num(r,"bs_bag_cl"));
+
         ps.setDouble(i++, num(r,"steam"));
 
         ps.executeUpdate();
     }
+
 
     private void update(HttpServletRequest r, Connection c) throws Exception {
 
         PreparedStatement ps = c.prepareStatement(
             "UPDATE D_PROD_PERF_PNP SET " +
+
             "D_H2SO4_RECEIPT=?,D_H2SO4_CONS=?,D_H2SO4_CL_STK=?," +
+            "D_AMDEA_RECEIPT=?,D_AMDEA_CONS=?,D_AMDEA_CL_STK=?," +
             "D_NAOH_RECEIPT=?,D_NAOH_CONS=?,D_NAOH_CL_STK=?," +
+
             "D_BS_PROD=?,D_BS_DESP=?,D_BS_CL_STK=?," +
             "D_MS_RECT=?,D_MS_CONS=?,D_MS_CL_STK=?," +
             "D_BC_RECT=?,D_BC_CONS=?,D_BC_CL_STK=?," +
             "D_BS_BAG_RECT=?,D_BS_BAG_CONS=?,D_BS_BAG_CL_STK=?," +
-            "D_BS_STEAM_CONS=? WHERE D_DATE=TO_DATE(?,'DD/MM/YYYY')"
+            "D_BS_STEAM_CONS=? " +
+
+            "WHERE D_DATE=TO_DATE(?,'DD/MM/YYYY')"
         );
 
         int i = 1;
+
         ps.setDouble(i++, num(r,"h2so4_rct"));
         ps.setDouble(i++, num(r,"h2so4_cons"));
         ps.setDouble(i++, num(r,"h2so4_cl"));
+
+        ps.setDouble(i++, num(r,"amdea_rct"));
+        ps.setDouble(i++, num(r,"amdea_cons"));
+        ps.setDouble(i++, num(r,"amdea_cl"));
+
         ps.setDouble(i++, num(r,"naoh_rct"));
         ps.setDouble(i++, num(r,"naoh_cons"));
         ps.setDouble(i++, num(r,"naoh_cl"));
+
         ps.setDouble(i++, num(r,"bs_rct"));
         ps.setDouble(i++, num(r,"bs_cons"));
         ps.setDouble(i++, num(r,"bs_cl"));
+
         ps.setDouble(i++, num(r,"ms_rct"));
         ps.setDouble(i++, num(r,"ms_cons"));
         ps.setDouble(i++, num(r,"ms_cl"));
+
         ps.setDouble(i++, num(r,"bc_rct"));
         ps.setDouble(i++, num(r,"bc_cons"));
         ps.setDouble(i++, num(r,"bc_cl"));
+
         ps.setDouble(i++, num(r,"bs_bag_rct"));
         ps.setDouble(i++, num(r,"bs_bag_cons"));
         ps.setDouble(i++, num(r,"bs_bag_cl"));
+
         ps.setDouble(i++, num(r,"steam"));
+
         ps.setString(i, r.getParameter("reportdate"));
 
         ps.executeUpdate();
     }
+
 
     private double num(HttpServletRequest r, String p) {
         try { return Double.parseDouble(r.getParameter(p)); }
