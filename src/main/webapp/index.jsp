@@ -83,7 +83,7 @@
         </div>
     </a>
 
-    <a href="gtg.jsp" class="card-link">
+    <a href="gtg" class="card-link">
         <div class="box">
             <h3>GTG</h3>
         </div>

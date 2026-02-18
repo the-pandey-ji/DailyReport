@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+
 <%
 String reportDate = (String) request.getAttribute("reportdate");
 String ldohsdOp = String.valueOf(request.getAttribute("ldohsd_op"));
@@ -13,12 +14,12 @@ String error = String.valueOf(request.getAttribute("error"));
 
 <style>
 body{font-family:Arial;background:#eee}
-h3{text-align:center;color:red}
+h3{text-align:center;color:#800000;margin-top:20px}
 table{width:95%;margin:auto;border-collapse:collapse}
 td{padding:6px}
 input{width:90px}
-.header{background:#dcdcdc;padding:10px}
-.footer{text-align:center;margin-top:20px}
+.header{background:#b7d8ea;padding:6px;font-weight:bold}
+.footer{text-align:center;margin:20px}
 </style>
 
 <script>
@@ -62,8 +63,10 @@ function loadDetails(){
 <body>
 
 <div class="header">
-<b>MHP Daily Report Data Entry Form</b>
+Department : IT
+<span style="float:right">Date : <%=reportDate%></span>
 </div>
+
 
 <h3>MHP Daily Report Data Entry Form</h3>
 
