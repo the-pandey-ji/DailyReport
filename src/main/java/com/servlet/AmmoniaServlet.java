@@ -147,31 +147,111 @@ public class AmmoniaServlet extends HttpServlet {
     }
 
 
-    private void save(HttpServletRequest r){
-        try(Connection c=DBUtil.getConnection()){
-            PreparedStatement ps=c.prepareStatement(
-              "MERGE INTO D_PROD_PERF_PNP d USING dual ON (D_DATE=TO_DATE(?,'DD/MM/YYYY')) " +
-              "WHEN MATCHED THEN UPDATE SET D_AMM_PROD=?,AMM_IMPORT=?,D_AMM_TO_UREA=?,D_AMM_INT_CONS=?,D_AMM_TO_OTHER_UNITS=?,D_AMM_CL_STK=? " +
-              "WHEN NOT MATCHED THEN INSERT (D_DATE,D_AMM_PROD,AMM_IMPORT,D_AMM_TO_UREA,D_AMM_INT_CONS,D_AMM_TO_OTHER_UNITS,D_AMM_CL_STK) " +
-              "VALUES (TO_DATE(?,'DD/MM/YYYY'),?,?,?,?,?,?)");
-            int i=1;
-            ps.setString(i++,r.getParameter("reportdate"));
-            ps.setDouble(i++,n(r,"ammonia_production"));
-            ps.setDouble(i++,n(r,"ammonia_import"));
-            ps.setDouble(i++,n(r,"ammonia_to_urea"));
-            ps.setDouble(i++,n(r,"ammonia_internal_consumption"));
-            ps.setDouble(i++,n(r,"ammonia_export_to_units"));
-            ps.setDouble(i++,n(r,"ammonia_closing_stock"));
-            ps.setString(i++,r.getParameter("reportdate"));
-            ps.setDouble(i++,n(r,"ammonia_production"));
-            ps.setDouble(i++,n(r,"ammonia_import"));
-            ps.setDouble(i++,n(r,"ammonia_to_urea"));
-            ps.setDouble(i++,n(r,"ammonia_internal_consumption"));
-            ps.setDouble(i++,n(r,"ammonia_export_to_units"));
-            ps.setDouble(i++,n(r,"ammonia_closing_stock"));
+    private void save(HttpServletRequest r) {
+
+        try (Connection c = DBUtil.getConnection()) {
+
+            PreparedStatement ps = c.prepareStatement(
+                "MERGE INTO D_PROD_PERF_PNP d USING dual " +
+                "ON (d.D_DATE = TO_DATE(?,'DD/MM/YYYY')) " +
+
+                "WHEN MATCHED THEN UPDATE SET " +
+                "D_AMM_PROD=?, AMM_IMPORT=?, D_AMM_TO_UREA=?, D_AMM_INT_CONS=?, " +
+                "D_AMM_TO_OTHER_UNITS=?, D_AMM_CL_STK=?, " +
+                "D_AMM_STRM_HRS=?, D_AMM_NG_CONS=?, D_BFW_EXP_AMM_TO_SGP=?, " +
+                "D_AMDEA_CONS=?, D_BFW_EXP_AMM_TO_CPP=?, D_WHB_STM_AMM_TO_100K=?, " +
+                "D_AMM_AVG_BFW_TEMP=?, D_CV_NG=?, " +
+                "D_LS_RMTLS_AMM=?, D_LS_POWER_AMM=?, D_LS_MECH_AMM=?, D_LS_ELEC_AMM=?, " +
+                "D_LS_INST_AMM=?, D_LS_PROC_AMM=?, D_LS_SD_AMM=?, D_LS_OTHER_AMM=?, " +
+                "D_NG_RECEIPT=?, D_LS_AN_SD_AMM=?, D_NG_CONS_GTG=? " +
+
+                "WHEN NOT MATCHED THEN INSERT ( " +
+                "D_DATE, D_AMM_PROD, AMM_IMPORT, D_AMM_TO_UREA, D_AMM_INT_CONS, " +
+                "D_AMM_TO_OTHER_UNITS, D_AMM_CL_STK, D_AMM_STRM_HRS, D_AMM_NG_CONS, " +
+                "D_BFW_EXP_AMM_TO_SGP, D_AMDEA_CONS, D_BFW_EXP_AMM_TO_CPP, " +
+                "D_WHB_STM_AMM_TO_100K, D_AMM_AVG_BFW_TEMP, D_CV_NG, " +
+                "D_LS_RMTLS_AMM, D_LS_POWER_AMM, D_LS_MECH_AMM, D_LS_ELEC_AMM, " +
+                "D_LS_INST_AMM, D_LS_PROC_AMM, D_LS_SD_AMM, D_LS_OTHER_AMM, " +
+                "D_NG_RECEIPT, D_LS_AN_SD_AMM, D_NG_CONS_GTG ) " +
+
+                "VALUES (TO_DATE(?,'DD/MM/YYYY'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+            );
+
+            int i = 1;
+
+            /* ---------- MERGE KEY ---------- */
+            ps.setString(i++, r.getParameter("reportdate"));
+
+            /* ---------- UPDATE VALUES ---------- */
+            ps.setDouble(i++, n(r,"ammonia_production"));
+            ps.setDouble(i++, n(r,"ammonia_import"));
+            ps.setDouble(i++, n(r,"ammonia_to_urea"));
+            ps.setDouble(i++, n(r,"ammonia_internal_consumption"));
+            ps.setDouble(i++, n(r,"ammonia_export_to_units"));
+            ps.setDouble(i++, n(r,"ammonia_closing_stock"));
+
+            ps.setDouble(i++, n(r,"ammonia_stream_hours"));
+            ps.setDouble(i++, n(r,"feed_consumption_ng"));
+            ps.setDouble(i++, n(r,"bfw_export_to_sgp"));
+            ps.setDouble(i++, n(r,"amdea_consumption"));
+            ps.setDouble(i++, n(r,"bfw_export_to_cpp"));
+            ps.setDouble(i++, n(r,"whb_steam_to_100k_hdr"));
+            ps.setDouble(i++, n(r,"average_bfw_temperature"));
+            ps.setDouble(i++, n(r,"cv_ng"));
+
+            ps.setDouble(i++, n(r,"rawmaterials"));
+            ps.setDouble(i++, n(r,"exportpower"));
+            ps.setDouble(i++, n(r,"mechanical"));
+            ps.setDouble(i++, n(r,"electrical"));
+            ps.setDouble(i++, n(r,"instrumentation"));
+            ps.setDouble(i++, n(r,"process1"));
+            ps.setDouble(i++, n(r,"shutdown"));
+            ps.setDouble(i++, n(r,"others"));
+
+            ps.setDouble(i++, n(r,"totalng"));
+            ps.setDouble(i++, n(r,"annualshutdown"));
+            ps.setDouble(i++, n(r,"ngconsgtg"));
+
+            /* ---------- INSERT DATE AGAIN ---------- */
+            ps.setString(i++, r.getParameter("reportdate"));
+
+            /* ---------- INSERT VALUES (same order) ---------- */
+            ps.setDouble(i++, n(r,"ammonia_production"));
+            ps.setDouble(i++, n(r,"ammonia_import"));
+            ps.setDouble(i++, n(r,"ammonia_to_urea"));
+            ps.setDouble(i++, n(r,"ammonia_internal_consumption"));
+            ps.setDouble(i++, n(r,"ammonia_export_to_units"));
+            ps.setDouble(i++, n(r,"ammonia_closing_stock"));
+
+            ps.setDouble(i++, n(r,"ammonia_stream_hours"));
+            ps.setDouble(i++, n(r,"feed_consumption_ng"));
+            ps.setDouble(i++, n(r,"bfw_export_to_sgp"));
+            ps.setDouble(i++, n(r,"amdea_consumption"));
+            ps.setDouble(i++, n(r,"bfw_export_to_cpp"));
+            ps.setDouble(i++, n(r,"whb_steam_to_100k_hdr"));
+            ps.setDouble(i++, n(r,"average_bfw_temperature"));
+            ps.setDouble(i++, n(r,"cv_ng"));
+
+            ps.setDouble(i++, n(r,"rawmaterials"));
+            ps.setDouble(i++, n(r,"exportpower"));
+            ps.setDouble(i++, n(r,"mechanical"));
+            ps.setDouble(i++, n(r,"electrical"));
+            ps.setDouble(i++, n(r,"instrumentation"));
+            ps.setDouble(i++, n(r,"process1"));
+            ps.setDouble(i++, n(r,"shutdown"));
+            ps.setDouble(i++, n(r,"others"));
+
+            ps.setDouble(i++, n(r,"totalng"));
+            ps.setDouble(i++, n(r,"annualshutdown"));
+            ps.setDouble(i++, n(r,"ngconsgtg"));
+
             ps.executeUpdate();
-        }catch(Exception e){e.printStackTrace();}
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     private double n(HttpServletRequest r,String p){
         try{return Double.parseDouble(r.getParameter(p));}
