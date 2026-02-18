@@ -65,7 +65,7 @@
         </div>
     </a>
 
-    <a href="ammonia.jsp" class="card-link">
+    <a href="ammonia" class="card-link">
         <div class="box">
             <h3>Ammonia</h3>
         </div>
