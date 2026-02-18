@@ -178,7 +178,8 @@ Department : IT
 
 <div class="footer">
 <button type="submit">Save</button>
-<button type="button" onclick="window.close()">Exit</button>
+<button type="button" onclick="location.href='index.jsp'">Exit</button>
+
 </div>
 
 </form>
