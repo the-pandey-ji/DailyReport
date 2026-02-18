@@ -189,25 +189,36 @@ public class UreaServlet extends HttpServlet {
 
         PreparedStatement ps = c.prepareStatement(
             "INSERT INTO D_PROD_PERF_PNP (" +
-            "D_DATE, " +
-            "D_UREA_PROD, D_NEEMUREA_PROD, D_PLAIN_UREA_TRFR_GOLD_UREA, " +
-            "D_UREA_CO2_CONS, D_UREA_STEAM_CONS, D_UREA_STRM_HRS, " +
-            "D_LS_RMTLS_UREA, D_LS_POWER_UREA, D_LS_MECH_UREA, D_LS_ELEC_UREA, " +
-            "D_LS_INST_UREA, D_LS_PROC_UREA, D_LS_SD_UREA, D_LS_OTHER_UREA, " +
-            "D_LS_AN_SD_UREA, D_RAIL_DESP, D_ROAD_DESP, " +
-            "D_UREA_CL_STK, D_NEEMUREA_DESP" +
+            "D_DATE," +
+
+            "D_UREA_PROD, D_NEEMUREA_PROD, D_PLAIN_UREA_TRFR_GOLD_UREA," +
+            "D_UREA_CO2_CONS, D_UREA_STEAM_CONS, D_UREA_STRM_HRS," +
+
+            "D_LS_RMTLS_UREA, D_LS_POWER_UREA, D_LS_MECH_UREA, D_LS_ELEC_UREA," +
+            "D_LS_INST_UREA, D_LS_PROC_UREA, D_LS_SD_UREA, D_LS_OTHER_UREA," +
+            "D_LS_AN_SD_UREA," +
+
+            "D_RAIL_DESP, D_ROAD_DESP," +
+            "D_UREA_CL_STK, D_NEEMUREA_DESP," +
+
+            "D_HDPE_BAG_RECT, D_HDPE_BAG_CONS, D_HDPE_BAG_CL_STK," +
+            "D_NEEM_OIL_RCT, D_NEEM_OIL_CONS, D_NEEM_OIL_STK," +
+            "D_NEEM_BAG_RECT, D_NEEM_BAG_CONS, D_NEEM_BAG_CL_STK" +
             ") VALUES (" +
-            "TO_DATE(?,'DD/MM/YYYY'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+            "TO_DATE(?,'DD/MM/YYYY')," +
+            "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
         );
 
         int i = 1;
         ps.setString(i++, r.getParameter("reportdate"));
+
         ps.setDouble(i++, num(r,"ureaproduction"));
         ps.setDouble(i++, num(r,"neemureaproduction"));
         ps.setDouble(i++, num(r,"plainureatogoldurea"));
         ps.setDouble(i++, num(r,"co2consumption"));
         ps.setDouble(i++, num(r,"steamconsumption"));
         ps.setDouble(i++, num(r,"steamhours"));
+
         ps.setDouble(i++, num(r,"rawmaterials"));
         ps.setDouble(i++, num(r,"exportpower"));
         ps.setDouble(i++, num(r,"mechanical"));
@@ -217,10 +228,23 @@ public class UreaServlet extends HttpServlet {
         ps.setDouble(i++, num(r,"shutdown"));
         ps.setDouble(i++, num(r,"others"));
         ps.setDouble(i++, num(r,"annualshutdown"));
+
         ps.setDouble(i++, num(r,"rail"));
         ps.setDouble(i++, num(r,"road"));
         ps.setDouble(i++, num(r,"ureaclosingstock"));
         ps.setDouble(i++, num(r,"neemureadespatch"));
+
+        ps.setDouble(i++, num(r,"receipt"));
+        ps.setDouble(i++, num(r,"consumption"));
+        ps.setDouble(i++, num(r,"bagclosingstock"));
+
+        ps.setDouble(i++, num(r,"neemoilreceipt"));
+        ps.setDouble(i++, num(r,"neemoilconsumption"));
+        ps.setDouble(i++, num(r,"neemoilclosingstock"));
+
+        ps.setDouble(i++, num(r,"neemreceipt"));
+        ps.setDouble(i++, num(r,"neemconsumption"));
+        ps.setDouble(i++, num(r,"neembagclosingstock"));
 
         ps.executeUpdate();
     }
@@ -230,13 +254,23 @@ public class UreaServlet extends HttpServlet {
 
         PreparedStatement ps = c.prepareStatement(
             "UPDATE D_PROD_PERF_PNP SET " +
+
             "D_UREA_PROD=?, D_NEEMUREA_PROD=?, D_PLAIN_UREA_TRFR_GOLD_UREA=?," +
             "D_UREA_CO2_CONS=?, D_UREA_STEAM_CONS=?, D_UREA_STRM_HRS=?," +
+
             "D_LS_RMTLS_UREA=?, D_LS_POWER_UREA=?, D_LS_MECH_UREA=?, D_LS_ELEC_UREA=?," +
             "D_LS_INST_UREA=?, D_LS_PROC_UREA=?, D_LS_SD_UREA=?, D_LS_OTHER_UREA=?," +
-            "D_LS_AN_SD_UREA=?, D_RAIL_DESP=?, D_ROAD_DESP=?," +
-            "D_UREA_CL_STK=?, D_NEEMUREA_DESP=? " +
-            "WHERE D_DATE=TO_DATE(?,'DD/MM/YYYY')");
+            "D_LS_AN_SD_UREA=?," +
+
+            "D_RAIL_DESP=?, D_ROAD_DESP=?," +
+            "D_UREA_CL_STK=?, D_NEEMUREA_DESP=?," +
+
+            "D_HDPE_BAG_RECT=?, D_HDPE_BAG_CONS=?, D_HDPE_BAG_CL_STK=?," +
+            "D_NEEM_OIL_RCT=?, D_NEEM_OIL_CONS=?, D_NEEM_OIL_STK=?," +
+            "D_NEEM_BAG_RECT=?, D_NEEM_BAG_CONS=?, D_NEEM_BAG_CL_STK=? " +
+
+            "WHERE D_DATE=TO_DATE(?,'DD/MM/YYYY')"
+        );
 
         int i = 1;
         ps.setDouble(i++, num(r,"ureaproduction"));
@@ -245,6 +279,7 @@ public class UreaServlet extends HttpServlet {
         ps.setDouble(i++, num(r,"co2consumption"));
         ps.setDouble(i++, num(r,"steamconsumption"));
         ps.setDouble(i++, num(r,"steamhours"));
+
         ps.setDouble(i++, num(r,"rawmaterials"));
         ps.setDouble(i++, num(r,"exportpower"));
         ps.setDouble(i++, num(r,"mechanical"));
@@ -254,10 +289,24 @@ public class UreaServlet extends HttpServlet {
         ps.setDouble(i++, num(r,"shutdown"));
         ps.setDouble(i++, num(r,"others"));
         ps.setDouble(i++, num(r,"annualshutdown"));
+
         ps.setDouble(i++, num(r,"rail"));
         ps.setDouble(i++, num(r,"road"));
         ps.setDouble(i++, num(r,"ureaclosingstock"));
         ps.setDouble(i++, num(r,"neemureadespatch"));
+
+        ps.setDouble(i++, num(r,"receipt"));
+        ps.setDouble(i++, num(r,"consumption"));
+        ps.setDouble(i++, num(r,"bagclosingstock"));
+
+        ps.setDouble(i++, num(r,"neemoilreceipt"));
+        ps.setDouble(i++, num(r,"neemoilconsumption"));
+        ps.setDouble(i++, num(r,"neemoilclosingstock"));
+
+        ps.setDouble(i++, num(r,"neemreceipt"));
+        ps.setDouble(i++, num(r,"neemconsumption"));
+        ps.setDouble(i++, num(r,"neembagclosingstock"));
+
         ps.setString(i, r.getParameter("reportdate"));
 
         ps.executeUpdate();
