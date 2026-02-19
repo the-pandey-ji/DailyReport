@@ -79,13 +79,13 @@
 
     <a href="steam" class="card-link">
         <div class="box">
-            <h3>Steam.jsp</h3>
+            <h3>Steam</h3>
         </div>
     </a>
 
     <a href="gtg" class="card-link">
         <div class="box">
-            <h3>GTG.jsp</h3>
+            <h3>GTG</h3>
         </div>
     </a>
 
@@ -104,6 +104,12 @@
     <a href="offsites" class="card-link">
         <div class="box">
             <h3>Offsites & Utilities</h3>
+        </div>
+    </a>
+    
+    <a href="telexStatus.jsp" class="card-link">
+        <div class="box">
+            <h3>Telex</h3>
         </div>
     </a>
 
