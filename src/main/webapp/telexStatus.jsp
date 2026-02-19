@@ -152,8 +152,9 @@ Department : IT
 <tr>
     <td width="20%"><label>Telex Date</label></td>
     <td width="30%">
-        <input type="text" id="tx_date" name="tx_date"
-               value="<%=reportDate%>" onchange="loadData()">
+       <input type="text" id="tx_date" name="tx_date"
+       value="<%=reportDate.trim()%>" onchange="loadData()">
+
     </td>
     <td width="20%"><label>Signing Authority</label></td>
     <td width="30%">

@@ -107,9 +107,9 @@
         </div>
     </a>
     
-    <a href="telexStatus.jsp" class="card-link">
+    <a href="telex" class="card-link">
         <div class="box">
-            <h3>Telex</h3>
+            <h3>Status</h3>
         </div>
     </a>
 
