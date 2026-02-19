@@ -77,15 +77,15 @@
         </div>
     </a>
 
-    <a href="steam.jsp" class="card-link">
+    <a href="steam" class="card-link">
         <div class="box">
-            <h3>Steam</h3>
+            <h3>Steam.jsp</h3>
         </div>
     </a>
 
     <a href="gtg" class="card-link">
         <div class="box">
-            <h3>GTG</h3>
+            <h3>GTG.jsp</h3>
         </div>
     </a>
 
@@ -95,7 +95,7 @@
         </div>
     </a>
 
-    <a href="powerReport.jsp" class="card-link">
+    <a href="power" class="card-link">
         <div class="box">
             <h3>Power Report</h3>
         </div>
