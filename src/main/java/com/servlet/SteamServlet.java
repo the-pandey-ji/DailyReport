@@ -60,34 +60,71 @@ public class SteamServlet extends HttpServlet {
         }catch(Exception e){e.printStackTrace();o.print("N?#?");}
     }
 
-    private void save(HttpServletRequest r){
-        try(Connection c=DBUtil.getConnection()){
-            PreparedStatement chk=c.prepareStatement(
-              "SELECT COUNT(*) FROM D_PROD_PERF_PNP WHERE D_DATE=TO_DATE(?,'DD/MM/YYYY')");
-            chk.setString(1,r.getParameter("report_date"));
-            ResultSet rs=chk.executeQuery(); rs.next();
+    private void save(HttpServletRequest r) {
 
-            String sql = rs.getInt(1)==0 ?
-              "INSERT INTO D_PROD_PERF_PNP(D_DATE,D_STM_PROD_SGP,D_STM_INT_CONS_SGP,D_STM_EXP_SGP_TO_CPP,"+
-              "D_STM_EXP_SGP_TO_AMM,D_SGP_CBD,D_SGP_STM_VENT,D_SGP_FW_DESHEAT,D_SGP_AVG_BFW_TEMP,"+
-              "D_COAL_CONS_SGP,D_FUEL_NG_CONS_SGP,D_SGP_BLR1_RUNHRS,D_SGP_BLR2_RUNHRS,D_SGP_BLR3_RUNHRS,D_FLY_ASH) "+
-              "VALUES(TO_DATE(?,'DD/MM/YYYY'),?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-              :
-              "UPDATE D_PROD_PERF_PNP SET D_STM_PROD_SGP=?,D_STM_INT_CONS_SGP=?,D_STM_EXP_SGP_TO_CPP=?, "+
-              "D_STM_EXP_SGP_TO_AMM=?,D_SGP_CBD=?,D_SGP_STM_VENT=?,D_SGP_FW_DESHEAT=?,D_SGP_AVG_BFW_TEMP=?, "+
-              "D_COAL_CONS_SGP=?,D_FUEL_NG_CONS_SGP=?,D_SGP_BLR1_RUNHRS=?,D_SGP_BLR2_RUNHRS=?, "+
-              "D_SGP_BLR3_RUNHRS=?,D_FLY_ASH=? WHERE D_DATE=TO_DATE(?,'DD/MM/YYYY')";
+        String sql =
+            "MERGE INTO D_PROD_PERF_PNP t " +
+            "USING (SELECT ? AS D_DATE FROM dual) s " +
+            "ON (t.D_DATE = s.D_DATE) " +
+            "WHEN MATCHED THEN UPDATE SET " +
+            "  D_STM_PROD_SGP=?, D_STM_INT_CONS_SGP=?, D_STM_EXP_SGP_TO_CPP=?, " +
+            "  D_STM_EXP_SGP_TO_AMM=?, D_SGP_CBD=?, D_SGP_STM_VENT=?, " +
+            "  D_SGP_FW_DESHEAT=?, D_SGP_AVG_BFW_TEMP=?, " +
+            "  D_COAL_CONS_SGP=?, D_FUEL_NG_CONS_SGP=?, " +
+            "  D_SGP_BLR1_RUNHRS=?, D_SGP_BLR2_RUNHRS=?, " +
+            "  D_SGP_BLR3_RUNHRS=?, D_FLY_ASH=? " +
+            "WHEN NOT MATCHED THEN INSERT ( " +
+            "  D_DATE, D_STM_PROD_SGP, D_STM_INT_CONS_SGP, D_STM_EXP_SGP_TO_CPP, " +
+            "  D_STM_EXP_SGP_TO_AMM, D_SGP_CBD, D_SGP_STM_VENT, " +
+            "  D_SGP_FW_DESHEAT, D_SGP_AVG_BFW_TEMP, " +
+            "  D_COAL_CONS_SGP, D_FUEL_NG_CONS_SGP, " +
+            "  D_SGP_BLR1_RUNHRS, D_SGP_BLR2_RUNHRS, " +
+            "  D_SGP_BLR3_RUNHRS, D_FLY_ASH " +
+            ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-            PreparedStatement ps=c.prepareStatement(sql);
-            int i=1;
-            ps.setString(i++,r.getParameter("report_date"));
-            String[] f={
-              "steam_production","steam_int_consumption","steam_export_to_cpp","steam_export_to_amm",
-              "continuous_blowdown","steam_venting","fwd_for_desuper_heating","avrg_bfw_temperature",
-              "coal_consumption","fuel_cons_ng","boiler_1","boiler_2","boiler_3","fly_ash_despatch"
+        try (Connection c = DBUtil.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            java.sql.Date date = new java.sql.Date(
+                new java.text.SimpleDateFormat("dd/MM/yyyy")
+                    .parse(r.getParameter("report_date")).getTime()
+            );
+
+            String[] f = {
+                "steam_production","steam_int_consumption","steam_export_to_cpp",
+                "steam_export_to_amm","continuous_blowdown","steam_venting",
+                "fwd_for_desuper_heating","avrg_bfw_temperature",
+                "coal_consumption","fuel_cons_ng",
+                "boiler_1","boiler_2","boiler_3","fly_ash_despatch"
             };
-            for(String x:f) ps.setDouble(i++,Double.parseDouble(r.getParameter(x)));
+
+            int i = 1;
+
+            // 1️⃣ MERGE source date
+            ps.setDate(i++, date);
+
+            // 2️⃣ UPDATE values (14)
+            for (String x : f) {
+                ps.setDouble(i++, parseDoubleSafe(r.getParameter(x)));
+            }
+
+            // 3️⃣ INSERT values (15)
+            ps.setDate(i++, date);   // insert date
+            for (String x : f) {
+                ps.setDouble(i++, parseDoubleSafe(r.getParameter(x)));
+            }
+
             ps.executeUpdate();
-        }catch(Exception e){e.printStackTrace();}
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private double parseDoubleSafe(String v) {
+        try {
+            return (v == null || v.trim().isEmpty()) ? 0.0 : Double.parseDouble(v);
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
     }
 }
