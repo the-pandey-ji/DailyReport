@@ -69,6 +69,31 @@ function setForm(){
         document.querySelectorAll("input").forEach(i=>i.disabled=true);
     }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+
+	  const form = document.forms[0];
+
+	  form.addEventListener("keydown", function (e) {
+
+	    if (e.key === "Enter" && e.target.tagName !== "TEXTAREA") {
+	      e.preventDefault();
+
+	      const focusable = Array.from(
+	        form.querySelectorAll(
+	          'input:not([type=hidden]):not([readonly]):not([disabled]), select:not([disabled]), textarea:not([disabled])'
+	        )
+	      );
+
+	      const index = focusable.indexOf(e.target);
+
+	      if (index > -1 && index < focusable.length - 1) {
+	        focusable[index + 1].focus();
+	      }
+	    }
+	  });
+
+	});
 </script>
 </head>
 

@@ -112,6 +112,12 @@
             <h3>Status</h3>
         </div>
     </a>
+    
+     <a href="reportInput.jsp" class="card-link">
+        <div class="box">
+            <h3>CO DailyReport</h3>
+        </div>
+    </a>
 
 
 
