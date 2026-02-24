@@ -113,9 +113,14 @@
         </div>
     </a>
     
-     <a href="reportInput.jsp" class="card-link">
+     <a href="CODailyReport.jsp" class="card-link">
         <div class="box">
             <h3>CO DailyReport</h3>
+        </div>
+    </a>
+     <a href="pnpDailyReport.jsp" class="card-link">
+        <div class="box">
+            <h3>PNP DailyReport</h3>
         </div>
     </a>
 
